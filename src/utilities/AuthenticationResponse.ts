@@ -1,6 +1,7 @@
 export interface AuthResponse {
-  status: boolean;
-  message: string;
+  status: boolean,
+  message: string,
+  token?: string,
 }
 
 export function getError(message: string): AuthResponse {
@@ -9,9 +10,10 @@ export function getError(message: string): AuthResponse {
     message: message,
   };
 }
-export function getSuccess(message: string): AuthResponse {
+export function getSuccess(message: string, token?: string): AuthResponse {
   return {
     status: true,
     message: message,
+    token: token,
   };
 }

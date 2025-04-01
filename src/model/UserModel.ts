@@ -11,6 +11,9 @@ const User = client.define('User', {
     type: DataTypes.STRING,
     allowNull: false,
   },
+  refreshToken:{
+    type: DataTypes.STRING,
+  }
 });
 
 User.sync();

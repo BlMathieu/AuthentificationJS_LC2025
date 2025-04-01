@@ -1,6 +1,7 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post, Res } from '@nestjs/common';
+import { Response } from 'express';
 import { AuthenticationService } from 'src/services/authentication/authentication.service';
-import { AuthResponse, getError, getSuccess } from 'src/types/AuthenticationResponse';
+import { AuthResponse, getError, getSuccess } from 'src/utilities/AuthenticationResponse';
 
 @Controller('authentication')
 export class AuthenticationController {
@@ -9,7 +10,7 @@ export class AuthenticationController {
   @Post('register')
   async register(@Body() credentials: { login: string; password: string }): Promise<AuthResponse> {
     try {
-      await this.authenticationService.login(credentials);
+      await this.authenticationService.register(credentials);
       return getSuccess(`Utilisateur ${credentials.login} créé !`);
     }
     catch (error) {
@@ -18,11 +19,11 @@ export class AuthenticationController {
   }
 
   @Post('login')
-  async login(@Body() credentials: { login: string; password: string }): Promise<AuthResponse> {
+  async login(@Body() credentials: { login: string; password: string }, @Res() response: Response): Promise<AuthResponse> {
     try {
-      const status = await this.authenticationService.login(credentials);
-      if (!status) throw new Error('Mot de passe incorrect !');
-      return getSuccess(`L'utilisateur ${credentials.login} est bien connecté !`);
+      const tokens = await this.authenticationService.login(credentials);
+      response.cookie('refresh_token', tokens.refresh);
+      return getSuccess(`L'utilisateur ${credentials.login} est bien connecté !`, tokens.access);
     }
     catch (error) {
       return getError(error.message);
