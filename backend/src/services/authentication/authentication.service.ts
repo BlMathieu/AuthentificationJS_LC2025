@@ -17,6 +17,7 @@ export class AuthenticationService {
   async login(credentials: { login: string; password: string }): Promise<{ access: string; refresh: string; }> {
     const dbUser = await User.findOne({ where: { login: credentials.login } });
     if (!dbUser) throw new Error(`L'utilisateur ${credentials.login} n'existe pas`);
+
     const dbPassword = dbUser.get('password') as string || '';
     const status = this.crypto.checkPasswordWithHash(credentials.password, dbPassword);
     if (!status) throw new Error('Mot de passe incorrect !');
@@ -24,10 +25,10 @@ export class AuthenticationService {
     const payload = { username: credentials.login };
     const accessSecret: JwtSignOptions = { secret: process.env.SECRET_ACCESSTOKEN || '' };
     const refreshSecret: JwtSignOptions = { secret: process.env.SECRET_REFRESHTOKEN || '' };
+
     const accessToken = await this.jwtService.signAsync(payload, accessSecret);
     const refreshToken = await this.jwtService.signAsync(payload, refreshSecret);
-    await dbUser.update('refreshToken', refreshToken);
-
+    await dbUser.update({ refreshToken: refreshToken });
     return { access: accessToken, refresh: refreshToken };
   }
 }

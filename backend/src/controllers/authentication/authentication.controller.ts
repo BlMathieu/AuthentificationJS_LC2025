@@ -19,14 +19,15 @@ export class AuthenticationController {
   }
 
   @Post('login')
-  async login(@Body() credentials: { login: string; password: string }, @Res() response: Response): Promise<AuthResponse> {
+  async login(@Body() credentials: { login: string; password: string }, @Res() response: Response) {
     try {
       const tokens = await this.authenticationService.login(credentials);
       response.cookie('refresh_token', tokens.refresh);
-      return getSuccess(`L'utilisateur ${credentials.login} est bien connecté !`, tokens.access);
+      response.send(getSuccess(`L'utilisateur ${credentials.login} est bien connecté !`,tokens.access));
     }
     catch (error) {
-      return getError(error.message);
+      console.error(error);
+      response.send(getError(error.message));
     }
   }
 }
