@@ -3,22 +3,16 @@ import { Input } from "../ui/input";
 import { Label } from "@radix-ui/react-label";
 import { Button } from "../ui/button";
 import BaseForm from "./BaseForm";
+import { useDispatch } from "react-redux";
+import { AppDispatch, connectThunk } from "@/stores/AuthenticationStore";
 
 export default function Login() {
+    const dispatch: AppDispatch = useDispatch();
     const [username, setUsername] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const handleForm = async (event: FormEvent) => {
         event.preventDefault();
-        const params = JSON.stringify({ login: username, password: password });
-        const response = await fetch('http://localhost:3000/authentication/login', {
-            method:'POST',
-            headers: { 'content-type': 'application/json' },
-            body: params,
-        }).then((value) => { return value.json() }).catch((error) => {
-            console.error(error);
-        });
-
-        console.log(response);
+        dispatch(connectThunk({ login: username, password: password }));
     }
     return (
         <BaseForm handleForm={handleForm}>

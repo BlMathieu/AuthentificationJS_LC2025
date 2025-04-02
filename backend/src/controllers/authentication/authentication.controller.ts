@@ -1,33 +1,38 @@
 import { Body, Controller, Post, Res } from '@nestjs/common';
 import { Response } from 'express';
 import { AuthenticationService } from 'src/services/authentication/authentication.service';
-import { AuthResponse, getError, getSuccess } from 'src/utilities/AuthenticationResponse';
+import { authError, authSuccess } from 'src/utilities/responses/AuthenticationResponse';
+import AuthInterface from 'src/utilities/types/AuthInterface';
+import CredentialsInterface from 'src/utilities/types/CredentialsInterface';
 
 @Controller('authentication')
 export class AuthenticationController {
   constructor(private authenticationService: AuthenticationService) { }
 
   @Post('register')
-  async register(@Body() credentials: { login: string; password: string }): Promise<AuthResponse> {
+  async register(@Body() credentials: CredentialsInterface): Promise<AuthInterface> {
     try {
       await this.authenticationService.register(credentials);
-      return getSuccess(`Utilisateur ${credentials.login} créé !`);
+      return authSuccess(`Utilisateur ${credentials.login} créé !`);
     }
     catch (error) {
-      return getError(error.message);
+      console.error(error);
+      if (error instanceof Error) return authError(error.message);
+      else return authError(`Échec de l'inscription !`);
     }
   }
 
   @Post('login')
-  async login(@Body() credentials: { login: string; password: string }, @Res() response: Response) {
+  async login(@Body() credentials: CredentialsInterface, @Res() response: Response): Promise<void> {
     try {
       const tokens = await this.authenticationService.login(credentials);
-      response.cookie('refresh_token', tokens.refresh);
-      response.send(getSuccess(`L'utilisateur ${credentials.login} est bien connecté !`,tokens.access));
+      response.cookie('refresh_token', tokens.refreshToken);
+      response.send(authSuccess(`L'utilisateur ${credentials.login} est bien connecté !`, tokens.accessToken));
     }
     catch (error) {
       console.error(error);
-      response.send(getError(error.message));
+      if (error instanceof Error) response.send(authError(error.message));
+      else response.send(authError(`Échec de l'authentification !`));
     }
   }
 }
