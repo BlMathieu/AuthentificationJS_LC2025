@@ -16,6 +16,7 @@ const User = client.define('User', {
   },
   isAdmin: {
     type: DataTypes.BOOLEAN,
+    defaultValue: 0,
   }
 });
 

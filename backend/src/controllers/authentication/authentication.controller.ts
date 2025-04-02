@@ -1,5 +1,5 @@
-import { Body, Controller, Post, Res } from '@nestjs/common';
-import { Response } from 'express';
+import { Body, Controller, Post, Req, Res } from '@nestjs/common';
+import { Request, Response } from 'express';
 import { AuthenticationService } from 'src/services/authentication/authentication.service';
 import { authError, authSuccess } from 'src/utilities/responses/AuthenticationResponse';
 import AuthInterface from 'src/utilities/types/AuthInterface';
@@ -35,6 +35,20 @@ export class AuthenticationController {
       console.error(error);
       if (error instanceof Error) response.send(authError(error.message));
       else response.send(authError(`Échec de l'authentification !`));
+    }
+  }
+
+  @Post('refresh')
+  async refresh(@Req() request: Request): Promise<AuthInterface> {
+    try {
+      const token = request.headers.cookie?.replace('refresh_token=', '');
+      if (!token) throw new Error('Token unavailable !');
+      const newToken = await this.authenticationService.refresh(token);
+      return authSuccess(`Reconnexion réussi !`, newToken);
+    } catch (error) {
+      console.error(error);
+      if (error instanceof Error) return authError(error.message);
+      else return authError(`Échec de l'authentification !`);
     }
   }
 }
