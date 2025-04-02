@@ -13,14 +13,13 @@ export default function Register() {
         event.preventDefault();
         if (password != confirmPassword) throw new Error("Les mots de passes ne correspondent pas !");
         const params = JSON.stringify({ login: username, password: password });
-        const response = await fetch('http://localhost:3000/authentication/register', {
+        await fetch('http://localhost:3000/authentication/register', {
             method: 'POST',
             headers: { 'content-type': 'application/json' },
             body: params,
         }).then((value) => { return value.json() }).catch((error) => {
             console.error(error);
         });
-        console.log(response);
     }
     return (
         <BaseForm handleForm={handleForm}>

@@ -11,8 +11,11 @@ const User = client.define('User', {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  refreshToken:{
+  refreshToken: {
     type: DataTypes.STRING,
+  },
+  isAdmin: {
+    type: DataTypes.BOOLEAN,
   }
 });
 

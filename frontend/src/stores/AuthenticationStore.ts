@@ -1,9 +1,8 @@
 import { createSlice, createAsyncThunk, configureStore } from '@reduxjs/toolkit';
 import { jwtDecode } from "jwt-decode";
 
-interface AuthStore {
+export interface AuthStore {
     token: string,
-    isLoading: boolean,
     user: { login: string, roles: string, exp: number }
 }
 
@@ -23,23 +22,20 @@ export const authSlice = createSlice({
     name: 'authenticator',
     initialState: <AuthStore>{
         token: '',
-        isLoading: false,
         user: { login: '', roles: '', exp: 0 },
     },
     reducers: {
         disconnect: (state) => {
             state.token = '';
             state.user = { login: '', roles: '', exp: 0 };
-        }
+        },
     },
     extraReducers(builder) {
         builder.addCase(connectThunk.fulfilled, (state, action) => {
-            state.isLoading = false;
             const response = action.payload;
-            state.token = response.accessToken;
-            state.user = jwtDecode(response.accessToken);
+            state.token = response.token;
+            state.user = jwtDecode(response.token);
         }).addCase(connectThunk.rejected, (state, action) => {
-            state.isLoading = false;
             state.token = '';
             state.user = { login: '', roles: '', exp: 0 };
             console.error(action.error);
@@ -48,7 +44,6 @@ export const authSlice = createSlice({
 })
 
 export const { disconnect } = authSlice.actions;
-
 const authStore = configureStore({
     reducer: {
         auth: authSlice.reducer,

@@ -26,7 +26,9 @@ export class AuthenticationController {
   async login(@Body() credentials: CredentialsInterface, @Res() response: Response): Promise<void> {
     try {
       const tokens = await this.authenticationService.login(credentials);
-      response.cookie('refresh_token', tokens.refreshToken);
+      const expirationDate = new Date();
+      expirationDate.setDate(expirationDate.getDate() + 1);
+      response.cookie('refresh_token', tokens.refreshToken, { httpOnly: true, expires: expirationDate });
       response.send(authSuccess(`L'utilisateur ${credentials.login} est bien connecté !`, tokens.accessToken));
     }
     catch (error) {
