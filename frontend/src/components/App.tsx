@@ -1,11 +1,18 @@
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import Login from './forms/Login'
 import Register from './forms/Register'
-import { AuthStore } from '@/stores/authentication/AuthenticationStore';
 import AuthFooter from './AuthFooter';
+import { useEffect } from 'react';
+import { refreshThunk } from '@/stores/authentication/AuthenticationThunkMiddleware';
+import { AuthStore } from '@/stores/authentication/AuthenticationSlicer';
+import { AppDispatch } from '@/stores/authentication/AuthenticationStore';
 
 function App() {
   const authStore = useSelector((state: { auth: AuthStore }) => state.auth);
+  const dispatch: AppDispatch = useDispatch();
+  useEffect(() => {
+    dispatch(refreshThunk());
+  }, [dispatch]);
 
   return (
     <>
@@ -22,5 +29,5 @@ function App() {
     </>
   )
 }
-
 export default App
+

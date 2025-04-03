@@ -14,21 +14,19 @@ passport.use(new GoogleStrategy({
 }, (accessToken, refreshToken, profile, done) => {
     return done(null, profile);
 }));
-app.use(session({
-    secret: 'unsecret', resave: false, saveUninitialized:
-        true
-}));
+app.use(session({ secret: 'unsecret', resave: false, saveUninitialized: true }));
 app.use(passport.initialize());
 app.use(passport.session());
+
+
 app.get('/', (req, res) => { res.send('<a href="/auth/google">Se connecter avec Google</a>'); });
-app.get('/auth/google',
-    passport.authenticate('google', { scope: ['profile', 'email'] })
-);
-app.get('/auth/google/callback',
-    passport.authenticate('google', { failureRedirect: '/' }), (req, res) => res.redirect('/profile')
-);
+
+app.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+app.get('/auth/google/callback',passport.authenticate('google', { failureRedirect: '/' }), (req, res) => res.redirect('/profile'));
+
 app.get('/profile', (req, res) => {
     if (!req.isAuthenticated()) return res.redirect('/');
     res.send(`<h1>Profil Google</h1><pre>${JSON.stringify(req.user, null, 2)}</pre>`);
 });
+
 app.listen(3000, () => console.log('Serveur lancé sur http://localhost:3000'));

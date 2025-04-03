@@ -59,7 +59,7 @@ export class AuthenticationController {
       response.send(authSuccess('Déconnexion réussi !'));
     } catch (error) {
       if (error instanceof Error) response.send(authError(error.message));
-      else response.send('Échec de la déconnexion, erreur du serveur !');
+      else response.send(authError('Échec de la déconnexion, erreur du serveur !'));
     }
   }
 }

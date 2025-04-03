@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { jwtDecode } from "jwt-decode";
-import { connectThunk, refreshThunk } from "./AuthenticationThunkMiddleware";
+import { connectThunk, logoutThunk, refreshThunk } from "./AuthenticationThunkMiddleware";
 
 export interface AuthStore {
     token: string,
@@ -47,6 +47,8 @@ export const authSlice = createSlice({
             .addCase(connectThunk.rejected, handleError)
             .addCase(refreshThunk.fulfilled, handleSuccess)
             .addCase(refreshThunk.rejected, handleError)
+            .addCase(logoutThunk.fulfilled, resetStates)
+            .addCase(logoutThunk.rejected, handleError)
     },
 })
 
