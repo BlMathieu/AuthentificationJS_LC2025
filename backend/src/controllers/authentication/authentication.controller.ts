@@ -51,4 +51,15 @@ export class AuthenticationController {
       else return authError(`Échec de l'authentification !`);
     }
   }
+
+  @Post('logout')
+  logout(@Res() response: Response): void {
+    try {
+      response.clearCookie('refresh_token');
+      response.send(authSuccess('Déconnexion réussi !'));
+    } catch (error) {
+      if (error instanceof Error) response.send(authError(error.message));
+      else response.send('Échec de la déconnexion, erreur du serveur !');
+    }
+  }
 }

@@ -4,7 +4,8 @@ import { Label } from "@radix-ui/react-label";
 import { Button } from "../ui/button";
 import BaseForm from "./BaseForm";
 import { useDispatch } from "react-redux";
-import { AppDispatch, connectThunk } from "@/stores/AuthenticationStore";
+import { AppDispatch } from "@/stores/authentication/AuthenticationStore";
+import { connectThunk } from "@/stores/authentication/AuthenticationThunkMiddleware";
 
 export default function Login() {
     const dispatch: AppDispatch = useDispatch();

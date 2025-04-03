@@ -14,9 +14,12 @@ const User = client.define('User', {
   refreshToken: {
     type: DataTypes.STRING,
   },
-  isAdmin: {
-    type: DataTypes.BOOLEAN,
-    defaultValue: 0,
+  role: {
+    type: DataTypes.STRING,
+    defaultValue: 'guest',
+    validate: {
+      isIn: [['guest','admin']],
+    }
   }
 });
 
